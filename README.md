@@ -1,16 +1,13 @@
-# Project Readable
+# Shoeb's Readable App
 
-## Summary
-Readable is a content and comment web app. Users will be able to post content to predefined categories, comment on their posts and other users' posts, and vote on posts and comments. Users will also be able to edit and delete posts and comments.
+This is a project for the Udacity React Fundamentals course. It was created using [create-react-app]( https://github.com/facebookincubator/create-react-app/blob/master/packages/react-scripts/template/README.md ).
 
-It is minimally styled using bootstrap. Utilizing the frameworks responsive, mobile first approach.
+## Getting Started
 
-This app will talk to a backend server using documented API endpoints to manage storing, reading, updating, and deleting data from the application.
+Clone and run the server by following the instructions here: https://github.com/udacity/reactnd-project-readable-starter
 
-## Installation
+Then clone this repository.
 
-1. Install packages: `npm install`.
-2. Run backend: [Project Readable Starter](https://github.com/udacity/reactnd-project-readable-starter).
-3. Launch react/redux app: `npm start`.
+After downloading the repository please run `npm install` or `yarn` from inside the repository directory.
 
-**This project was bootstrapped with [Create React App](https://github.com/facebookincubator/create-react-app).**
+Once installed use `npm start` or `yarn start` to launch the project.

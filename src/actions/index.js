@@ -1,106 +1,151 @@
-export const GET_ALL_CATEGORIES = 'GET_ALL_CATEGORIES'; // Get all of the categories available for the app.
-export const GET_POSTS = 'GET_POSTS'; // Get all of the posts for a particular category.
-export const GET_ALL_POSTS = 'GET_ALL_POSTS'; // Get all of the posts.
-export const ADD_POST = 'ADD_POST'; // Add a new post.
-export const GET_SINGLE_POST = 'GET_SINGLE_POST'; // Get the details of a single post.
-export const POST_VOTE = 'POST_VOTE'; // Used for voting on a post.
-export const EDIT_POST = 'EDIT_POST'; // Edit the details of an existing post.
-export const DELETE_POST = 'DELETE_POST'; // Sets the deleted flag for a post to 'true'.
-export const GET_COMMENTS = 'GET_COMMENTS'; // Get all the comments for a single post.
-export const ADD_COMMENT = 'ADD_COMMENT'; // Add a comment to a post.
-export const COMMENT_DETAILS = 'COMMENT_DETAILS'; // Get the details for a single comment.
-export const COMMENT_VOTE = 'COMMENT_VOTE'; // Used for voting on a comment.
-export const EDIT_COMMENT = 'EDIT_COMMENT'; // Edit the details of an existing comment.
-export const DELETE_COMMENT = 'DELETE_COMMENT'; // Sets a comment's deleted flag to 'true'.
-export const SORT_CATEGORIES = 'SORT_CATEGORIES';
-export const NEW_POST_TITLE = 'NEW_POST_TITLE';
-export const NEW_POST_BODY = 'NEW_POST_BODY';
-export const NEW_POST_AUTHOR = 'NEW_POST_AUTHOR';
-export const NEW_POST_CATEGORY = 'NEW_POST_CATEGORY';
-export const SORT_COMMENTS = 'SORT_COMMENTS';
-export const NEW_COMMENT_BODY = 'NEW_COMMENT_BODY';
-export const NEW_COMMENT_AUTHOR = 'NEW_COMMENT_AUTHOR';
+import * as PostAPIUtil from '../utils/post_api_util'
+import * as CategoryAPIUtil from '../utils/category_api_util'
+import * as CommentAPIUtil from '../utils/comment_api_util'
+export const ADD_POST = 'ADD_POST'
+export const ADD_COMMENT = 'ADD_COMMENT'
+export const RECEIVE_POSTS = 'RECEIVE_POSTS'
+export const RECEIVE_CATEGORIES = 'RECEIVE_CATEGORIES'
+export const GET_POST = 'GET_POST'
+export const RECEIVE_COMMENTS = 'RECEIVE_COMMENTS'
+export const GET_POSTS_BY_CATEGORY = 'GET_POSTS_BY_CATEGORY'
+export const SET_SORTING = 'SET_SORTING'
+export const VOTE = 'VOTE'
+export const COMMENT_VOTE = 'COMMENT_VOTE'
+export const DELETE_POST = 'DELETE_POST'
+export const DELETE_COMMENT = 'DELETE_COMMENT'
+export const SET_COMMENT_SORTING = 'SET_COMMENT_SORTING'
+export const EDIT_POST = 'EDIT_POST'
 
-// Action creators
-export const loadCategories = categories => ({
-  type: GET_ALL_CATEGORIES,
-  categories,
-});
-export const sortCategories = sortOption => ({
-  type: SORT_CATEGORIES,
-  sortOption,
-});
-export const loadPosts = post => ({
-  type: GET_POSTS,
-  post,
-});
-export const loadAllPosts = post => ({
-  type: GET_ALL_POSTS,
-  post,
-});
-export const addPost = post => ({
-  type: ADD_POST,
-  post,
-});
-export const newPostTitle = value => ({
-  type: NEW_POST_TITLE,
-  value,
-});
-export const newPostBody = value => ({
-  type: NEW_POST_BODY,
-  value,
-});
-export const newPostAuthor = value => ({
-  type: NEW_POST_AUTHOR,
-  value,
-});
-export const newPostCategory = value => ({
-  type: NEW_POST_CATEGORY,
-  value,
-});
-export const getSinglePost = post => ({
-  type: GET_SINGLE_POST,
-  post,
-});
-export const deleteSinglePost = post => ({
-  type: DELETE_POST,
-  post,
-});
+export const Sorting = {
+  BY_DATE_NEWEST: 'BY_DATE_NEWEST',
+  BY_DATE_OLDEST: 'BY_DATE_OLDEST',
+  BY_SCORE_HIGHEST: 'BY_SCORE_HIGHEST',
+  BY_SCORE_LOWEST: 'BY_SCORE_LOWEST'
+}
 
-// Comment Action Creators
-export const getComments = comments => ({
-  type: GET_COMMENTS,
-  comments,
-});
-export const addComment = comment => ({
-  type: ADD_COMMENT,
-  comment,
-});
-export const getSingleComment = comment => ({
-  type: COMMENT_DETAILS,
-  comment,
-});
-export const commentVote = comment => ({
-  type: COMMENT_VOTE,
-  comment,
-});
-export const editDetailsComment = comment => ({
-  type: EDIT_COMMENT,
-  comment,
-});
-export const deleteSingleComment = comment => ({
-  type: DELETE_COMMENT,
-  comment,
-});
-export const sortComments = sortOption => ({
-  type: SORT_COMMENTS,
-  sortOption,
-});
-export const newCommentBody = value => ({
-  type: NEW_COMMENT_BODY,
-  value,
-});
-export const newCommentAuthor = value => ({
-  type: NEW_COMMENT_AUTHOR,
-  value,
-});
+export const setSorting = sortBy => ({
+  type: SET_SORTING,
+  sortBy
+})
+
+export const setCommentSorting = sortCommentsBy => ({
+  type: SET_COMMENT_SORTING,
+  sortCommentsBy
+})
+
+export const postsById = (posts, actionType) => ({
+  type: actionType,
+  posts
+})
+
+// Got the idea for this from the udacity-react Slack. Specifically from user azreed.
+export const fetchPosts = () => dispatch =>
+  PostAPIUtil.fetchPosts()
+    .then(posts =>
+      Promise.all(
+        posts.map(post =>
+          CommentAPIUtil.fetchComments(post.id)
+            .then(comments => (post.comments = comments))
+            .then(() => post)
+        )
+      )
+    )
+    .then(posts => dispatch(postsById(posts, RECEIVE_POSTS)))
+
+export const receiveCategories = categories => ({
+  type: RECEIVE_CATEGORIES,
+  categories
+})
+
+export const fetchCategories = () => dispatch =>
+  CategoryAPIUtil.fetchCategories().then(categories =>
+    dispatch(receiveCategories(categories))
+  )
+
+export const getPostsByCategory = posts => ({
+  type: GET_POSTS_BY_CATEGORY,
+  posts
+})
+
+export const fetchPostsByCategory = category => dispatch =>
+  PostAPIUtil.fetchPostsByCategory(category)
+    .then(posts =>
+      Promise.all(
+        posts.map(post =>
+          CommentAPIUtil.fetchComments(post.id)
+            .then(comments => (post.comments = comments))
+            .then(() => post)
+        )
+      )
+    )
+    .then(posts => dispatch(postsById(posts, GET_POSTS_BY_CATEGORY)))
+
+export const receiveComments = (comments, actionType) => ({
+  type: actionType,
+  comments
+})
+
+export const fetchComments = id => dispatch =>
+  CommentAPIUtil.fetchComments(id).then(comments =>
+    dispatch(receiveComments(comments, RECEIVE_COMMENTS))
+  )
+
+export const voteComment = (id, vote) => dispatch =>
+  CommentAPIUtil.voteComment(id, vote).then(comment =>
+    dispatch(receiveComments(comment, COMMENT_VOTE))
+  )
+
+export const fetchPost = id => dispatch =>
+  PostAPIUtil.fetchPost(id)
+    .then(post =>
+      CommentAPIUtil.fetchComments(post.id)
+        .then(comments => (post.comments = comments))
+        .then(() => post)
+    )
+    .then(post => dispatch(postsById(post, GET_POST)))
+
+export const deletePost = id => dispatch =>
+  PostAPIUtil.deletePost(id)
+    .then(post =>
+      CommentAPIUtil.fetchComments(post.id)
+        .then(comments => (post.comments = comments))
+        .then(() => post)
+    )
+    .then(post => dispatch(postsById(post, DELETE_POST)))
+
+export const vote = (id, vote) => dispatch =>
+  PostAPIUtil.vote(id, vote)
+    .then(post =>
+      CommentAPIUtil.fetchComments(post.id)
+        .then(comments => (post.comments = comments))
+        .then(() => post)
+    )
+    .then(post => dispatch(postsById(post, VOTE)))
+
+export const addPost = data => dispatch =>
+  PostAPIUtil.addPost(data)
+    .then(post =>
+      CommentAPIUtil.fetchComments(post.id)
+        .then(comments => (post.comments = comments))
+        .then(() => post)
+    )
+    .then(post => dispatch(postsById(post, ADD_POST)))
+
+export const editPost = (data, id) => dispatch =>
+  PostAPIUtil.editPost(data, id)
+    .then(post =>
+      CommentAPIUtil.fetchComments(post.id)
+        .then(comments => (post.comments = comments))
+        .then(() => post)
+    )
+    .then(post => dispatch(postsById(post, EDIT_POST)))
+
+export const addComment = data => dispatch =>
+  CommentAPIUtil.addComment(data).then(comment =>
+    dispatch(receiveComments(comment, ADD_COMMENT))
+  )
+
+export const deleteComment = id => dispatch =>
+  CommentAPIUtil.deleteComment(id).then(comment =>
+    dispatch(receiveComments(comment, DELETE_COMMENT))
+  )

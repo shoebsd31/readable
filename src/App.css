@@ -1,18 +1,24 @@
 .App {
   text-align: center;
 }
-.readable-nav-btns {
-  padding: 0 2px;
+
+.App-logo {
+  animation: App-logo-spin infinite 20s linear;
+  height: 80px;
 }
-.readable-home-body {
-  padding: 20px 0;
+
+.App-header {
+  background-color: #222;
+  height: 150px;
+  padding: 20px;
+  color: white;
 }
-.readable-list-group {
-  padding: 5px 0;
+
+.App-intro {
+  font-size: large;
 }
-.readable-post-score-btns {
-  padding: 0 2px;
-}
-.readable-form-action-btns {
-  padding: 0 2px;
+
+@keyframes App-logo-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }
